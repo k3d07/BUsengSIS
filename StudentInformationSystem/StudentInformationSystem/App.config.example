@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <connectionStrings>
+    <add name="StudentDb"
+         connectionString="Server=localhost;Port=3306;Database=student_db;Uid=YOUR_USER;Pwd=YOUR_PASSWORD;" />
+  </connectionStrings>
+</configuration>
