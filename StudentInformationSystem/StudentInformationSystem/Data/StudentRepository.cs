@@ -70,12 +70,49 @@ namespace StudentInformationSystem.Data
             adapter.Fill(table);
             return table;
         }
+        public DataTable FilterStudents(string year, string program, string keyword)
+        {
+            year = (year ?? string.Empty).Trim();
+            program = (program ?? string.Empty).Trim();
+            keyword = (keyword ?? string.Empty).Trim();
+
+            var sql = new StringBuilder(SelectColumns + " WHERE 1=1");
+
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
+            using var cmd = new MySqlCommand { Connection = conn };
+
+            if (year.Length > 0 && !year.StartsWith("All", StringComparison.OrdinalIgnoreCase))
+            {
+                sql.Append(" AND year_level = @year");
+                cmd.Parameters.AddWithValue("@year", year);
+            }
+
+            if (program.Length > 0 && !program.StartsWith("All", StringComparison.OrdinalIgnoreCase))
+            {
+                sql.Append(" AND program = @program");
+                cmd.Parameters.AddWithValue("@program", program);
+            }
+
+            if (keyword.Length > 0)
+            {
+                sql.Append(" AND (name LIKE @kw OR student_id LIKE @kw)");
+                cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
+            }
+
+            sql.Append(" ORDER BY student_id");
+            cmd.CommandText = sql.ToString();
+
+            using var adapter = new MySqlDataAdapter(cmd);
+            var table = new DataTable();
+            adapter.Fill(table);
+            return table;
+        }
         public bool UpdateStudent(Student s)
         {
             using var conn = DbHelper.GetConnection();
             conn.Open();
 
-            // student_id is only used in the WHERE. The ID is never changed.
             using var cmd = new MySqlCommand(
                 @"UPDATE students
           SET name = @name,
