@@ -13,7 +13,6 @@ namespace StudentInformationSystem.Data
             @"SELECT student_id, name, gender, year_level, program,
                      contact_number, email, photo_path
               FROM students";
-
         public bool AddStudent(Student s)
         {
             using var conn = DbHelper.GetConnection();
@@ -38,7 +37,6 @@ namespace StudentInformationSystem.Data
 
             return cmd.ExecuteNonQuery() > 0;
         }
-
         public DataTable GetAllStudents()
         {
             using var conn = DbHelper.GetConnection();
@@ -52,7 +50,6 @@ namespace StudentInformationSystem.Data
             adapter.Fill(table);
             return table;
         }
-
         public DataTable SearchStudents(string keyword)
         {
             keyword = (keyword ?? string.Empty).Trim();
@@ -73,10 +70,47 @@ namespace StudentInformationSystem.Data
             adapter.Fill(table);
             return table;
         }
+        public bool UpdateStudent(Student s)
+        {
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
 
-        public bool UpdateStudent(Student s) { return false; }
-        public bool DeleteStudent(string studentId) { return false; }
+            // student_id is only used in the WHERE. The ID is never changed.
+            using var cmd = new MySqlCommand(
+                @"UPDATE students
+          SET name = @name,
+              gender = @gender,
+              year_level = @year,
+              program = @program,
+              contact_number = @contact,
+              email = @email,
+              photo_path = @photo
+          WHERE student_id = @id", conn);
 
+            cmd.Parameters.AddWithValue("@id", s.StudentId);
+            cmd.Parameters.AddWithValue("@name", s.Name);
+            cmd.Parameters.AddWithValue("@gender", s.Gender);
+            cmd.Parameters.AddWithValue("@year", s.YearLevel);
+            cmd.Parameters.AddWithValue("@program", s.Program);
+            cmd.Parameters.AddWithValue("@contact", s.ContactNumber);
+            cmd.Parameters.AddWithValue("@email",
+                string.IsNullOrWhiteSpace(s.Email) ? DBNull.Value : (object)s.Email);
+            cmd.Parameters.AddWithValue("@photo",
+                string.IsNullOrWhiteSpace(s.PhotoPath) ? DBNull.Value : (object)s.PhotoPath);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        public bool DeleteStudent(string studentId)
+        {
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
+
+            using var cmd = new MySqlCommand(
+                "DELETE FROM students WHERE student_id = @id", conn);
+            cmd.Parameters.AddWithValue("@id", studentId);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
         public bool StudentExists(string studentId)
         {
             using var conn = DbHelper.GetConnection();
