@@ -108,6 +108,36 @@ namespace StudentInformationSystem.Data
             adapter.Fill(table);
             return table;
         }
+        public Dictionary<string, int> GetStudentCounts()
+        {
+            var counts = new Dictionary<string, int>
+            {
+                ["Total"] = 0,
+                ["1st Year"] = 0,
+                ["2nd Year"] = 0,
+                ["3rd Year"] = 0,
+                ["4th Year"] = 0
+            };
+
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
+
+            using var cmd = new MySqlCommand(
+                "SELECT year_level, COUNT(*) FROM students GROUP BY year_level", conn);
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                string year = reader.GetString(0);
+                int n = Convert.ToInt32(reader.GetValue(1));
+
+                counts["Total"] += n;
+                if (counts.ContainsKey(year))
+                    counts[year] = n;
+            }
+
+            return counts;
+        }
         public bool UpdateStudent(Student s)
         {
             using var conn = DbHelper.GetConnection();
