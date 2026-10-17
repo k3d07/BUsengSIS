@@ -1,18 +1,56 @@
-﻿using StudentInformationSystem.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
+﻿using System;
+using MySqlConnector;
+using BUsengSIS.Models;
 
-namespace StudentInformationSystem.Data
+namespace BUsengSIS.Data
 {
-    internal class StudentRepository
+    public class UserRepository
     {
-        public bool AddStudent(Student s) { return false; }
-        public DataTable GetAllStudents() { return new DataTable(); }
-        public DataTable SearchStudents(string keyword) { return new DataTable(); }
-        public bool UpdateStudent(Student s) { return false; }
-        public bool DeleteStudent(string studentId) { return false; }
-        public bool StudentExists(string studentId) { return false; }
+        public User GetByUsername(string username)
+        {
+            using var connection = DbHelper.GetConnection();
+
+            string sql = @"SELECT user_id, username, password_hash, role, student_id
+                           FROM users
+                           WHERE username = @username
+                           LIMIT 1;";
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@username", username);
+
+            connection.Open();
+
+            using var reader = command.ExecuteReader();
+
+            if (!reader.Read())
+                return null;
+
+            return new User
+            {
+                UserId = reader.GetInt32("user_id"),
+                Username = reader.GetString("username"),
+                PasswordHash = reader.GetString("password_hash"),
+                Role = reader.GetString("role"),
+                StudentId = reader.IsDBNull(reader.GetOrdinal("student_id"))
+                    ? null
+                    : reader.GetInt32("student_id")
+            };
+        }
+
+        public void UpdateLastLogin(int userId)
+        {
+            using var connection = DbHelper.GetConnection();
+
+            string sql = @"UPDATE users
+                           SET last_login = @lastLogin
+                           WHERE user_id = @userId;";
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@lastLogin", DateTime.Now);
+            command.Parameters.AddWithValue("@userId", userId);
+
+            connection.Open();
+            command.ExecuteNonQuery();
+        }
     }
 }

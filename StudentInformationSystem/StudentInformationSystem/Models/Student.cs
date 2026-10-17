@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StudentInformationSystem.Models
+﻿namespace BUsengSIS.Models
 {
-    public class Student
+    public class User
     {
-        public string StudentId { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Gender { get; set; } = string.Empty;
-        public string YearLevel { get; set; } = string.Empty;
-        public string Program { get; set; } = string.Empty;
-        public string ContactNumber { get; set; } = string.Empty;
+        public int UserId { get; set; }
+        public string Username { get; set; }
+        public string PasswordHash { get; set; }
+        public string Role { get; set; }
+        public int? StudentId { get; set; }
     }
 }
