@@ -45,5 +45,5 @@ VALUES
 ('2025-01-0008', 'Cyril Gian Anonnuevo', 'Other', '4th Year', 'BS Computer Engineering', '09178889900', NULL, NULL),
 ('2025-01-0009', 'Kirk Gian Madronero', 'Male', '1st Year', 'BS Computer Engineering', '09179990011', 'madronero@example.com', NULL),
 ('2025-01-0010', 'Arlecchino O''Brien', 'Female', '2nd Year', 'BS Information Systems', '09170001122', NULL, NULL),
-('2025-01-0011', 'Charlie Kirk', 'Male', '3rd Year', 'BS Computer Science', '09171112345', 'kirk@example.com', NULL),
+('2025-01-0011', 'Madara Uchiha', 'Male', '3rd Year', 'BS Computer Science', '09171112345', 'uchiha@example.com', NULL),
 ('2025-01-0012', 'Ronova', 'Female', '4th Year', 'BS Information Technology', '09172223456', NULL, NULL);
