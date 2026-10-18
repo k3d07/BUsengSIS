@@ -1,6 +1,6 @@
 ﻿namespace BUsengSIS.Models
 {
-    public class User
+    public class Student
     {
         public int UserId { get; set; }
         public string Username { get; set; }
