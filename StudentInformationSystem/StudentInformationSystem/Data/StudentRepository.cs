@@ -4,9 +4,9 @@ using BUsengSIS.Models;
 
 namespace BUsengSIS.Data
 {
-    public class UserRepository
+    public class StudentRepository
     {
-        public User GetByUsername(string username)
+        public Student GetByUsername(string username)
         {
             using var connection = DbHelper.GetConnection();
 
