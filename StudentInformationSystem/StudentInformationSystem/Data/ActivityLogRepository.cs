@@ -6,7 +6,7 @@ namespace StudentInformationSystem.Data
 {
     public class ActivityLogRepository
     {
-        public void Log(string username, string action, string studentId)
+        public static void Log(string username, string action, string studentId)
         {
             using (var connection = DbHelper.GetConnection())
             {
@@ -30,7 +30,7 @@ namespace StudentInformationSystem.Data
             }
         }
 
-        public List<string> GetRecent()
+        public static List<string> GetRecent()
         {
             var logs = new List<string>();
 
