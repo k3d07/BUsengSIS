@@ -1,4 +1,4 @@
-namespace BUsengSIS
+namespace StudentInformationSystem
 {
     partial class MainForm
     {
@@ -15,26 +15,26 @@ namespace BUsengSIS
             this.components = new System.ComponentModel.Container();
             this.clockTimer = new System.Windows.Forms.Timer(this.components);
             this.pnlHeader = new System.Windows.Forms.Panel();
-            this.logoMain = new BUsengSIS.LogoBox();
+            this.logoMain = new StudentInformationSystem.LogoBox();
             this.lblAppTitle = new System.Windows.Forms.Label();
             this.btnViewLog = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.tlpStats = new System.Windows.Forms.TableLayoutPanel();
-            this.statTotal = new BUsengSIS.StatCard();
-            this.stat1st = new BUsengSIS.StatCard();
-            this.stat2nd = new BUsengSIS.StatCard();
-            this.stat3rd = new BUsengSIS.StatCard();
-            this.stat4th = new BUsengSIS.StatCard();
+            this.statTotal = new StudentInformationSystem.StatCard();
+            this.stat1st = new StudentInformationSystem.StatCard();
+            this.stat2nd = new StudentInformationSystem.StatCard();
+            this.stat3rd = new StudentInformationSystem.StatCard();
+            this.stat4th = new StudentInformationSystem.StatCard();
             this.pnlStatsLine = new System.Windows.Forms.Panel();
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.pnlDetails = new BUsengSIS.BorderPanel();
+            this.pnlDetails = new StudentInformationSystem.BorderPanel();
             this.lblDetailsTitle = new System.Windows.Forms.Label();
             this.lblStudentId = new System.Windows.Forms.Label();
             this.txtStudentId = new System.Windows.Forms.TextBox();
             this.lblName = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
             this.lblPhoto = new System.Windows.Forms.Label();
-            this.pnlPhoto = new BUsengSIS.BorderPanel();
+            this.pnlPhoto = new StudentInformationSystem.BorderPanel();
             this.picPhoto = new System.Windows.Forms.PictureBox();
             this.lblNoPhoto = new System.Windows.Forms.Label();
             this.btnBrowse = new System.Windows.Forms.Button();
@@ -56,7 +56,7 @@ namespace BUsengSIS
             this.cboYearFilter = new System.Windows.Forms.ComboBox();
             this.cboProgramFilter = new System.Windows.Forms.ComboBox();
             this.btnReset = new System.Windows.Forms.Button();
-            this.pnlGrid = new BUsengSIS.BorderPanel();
+            this.pnlGrid = new StudentInformationSystem.BorderPanel();
             this.dgvStudents = new System.Windows.Forms.DataGridView();
             this.colStudentId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -702,26 +702,26 @@ namespace BUsengSIS
 
         private System.Windows.Forms.Timer clockTimer;
         private System.Windows.Forms.Panel pnlHeader;
-        private BUsengSIS.LogoBox logoMain;
+        private StudentInformationSystem.LogoBox logoMain;
         private System.Windows.Forms.Label lblAppTitle;
         private System.Windows.Forms.Button btnViewLog;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.TableLayoutPanel tlpStats;
-        private BUsengSIS.StatCard statTotal;
-        private BUsengSIS.StatCard stat1st;
-        private BUsengSIS.StatCard stat2nd;
-        private BUsengSIS.StatCard stat3rd;
-        private BUsengSIS.StatCard stat4th;
+        private StudentInformationSystem.StatCard statTotal;
+        private StudentInformationSystem.StatCard stat1st;
+        private StudentInformationSystem.StatCard stat2nd;
+        private StudentInformationSystem.StatCard stat3rd;
+        private StudentInformationSystem.StatCard stat4th;
         private System.Windows.Forms.Panel pnlStatsLine;
         private System.Windows.Forms.Panel pnlContent;
-        private BUsengSIS.BorderPanel pnlDetails;
+        private StudentInformationSystem.BorderPanel pnlDetails;
         private System.Windows.Forms.Label lblDetailsTitle;
         private System.Windows.Forms.Label lblStudentId;
         private System.Windows.Forms.TextBox txtStudentId;
         private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.TextBox txtName;
         private System.Windows.Forms.Label lblPhoto;
-        private BUsengSIS.BorderPanel pnlPhoto;
+        private StudentInformationSystem.BorderPanel pnlPhoto;
         private System.Windows.Forms.PictureBox picPhoto;
         private System.Windows.Forms.Label lblNoPhoto;
         private System.Windows.Forms.Button btnBrowse;
@@ -743,7 +743,7 @@ namespace BUsengSIS
         private System.Windows.Forms.ComboBox cboYearFilter;
         private System.Windows.Forms.ComboBox cboProgramFilter;
         private System.Windows.Forms.Button btnReset;
-        private BUsengSIS.BorderPanel pnlGrid;
+        private StudentInformationSystem.BorderPanel pnlGrid;
         private System.Windows.Forms.DataGridView dgvStudents;
         private System.Windows.Forms.DataGridViewTextBoxColumn colStudentId;
         private System.Windows.Forms.DataGridViewTextBoxColumn colName;

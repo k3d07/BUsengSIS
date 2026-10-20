@@ -1,4 +1,4 @@
-namespace BUsengSIS
+namespace StudentInformationSystem
 {
     partial class LoginForm
     {
@@ -13,7 +13,7 @@ namespace BUsengSIS
         private void InitializeComponent()
         {
             this.pnlBrand = new System.Windows.Forms.Panel();
-            this.logoBrand = new BUsengSIS.LogoBox();
+            this.logoBrand = new StudentInformationSystem.LogoBox();
             this.lblBrandTitle = new System.Windows.Forms.Label();
             this.lblBrandSub = new System.Windows.Forms.Label();
             this.pnlLogin = new System.Windows.Forms.Panel();
@@ -176,7 +176,7 @@ namespace BUsengSIS
         }
 
         private System.Windows.Forms.Panel pnlBrand;
-        private BUsengSIS.LogoBox logoBrand;
+        private StudentInformationSystem.LogoBox logoBrand;
         private System.Windows.Forms.Label lblBrandTitle;
         private System.Windows.Forms.Label lblBrandSub;
         private System.Windows.Forms.Panel pnlLogin;

@@ -1,4 +1,4 @@
-namespace BUsengSIS
+namespace StudentInformationSystem
 {
     partial class LogForm
     {
@@ -12,7 +12,7 @@ namespace BUsengSIS
 
         private void InitializeComponent()
         {
-            this.pnlGrid = new BUsengSIS.BorderPanel();
+            this.pnlGrid = new StudentInformationSystem.BorderPanel();
             this.dgvLog = new System.Windows.Forms.DataGridView();
             this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -107,7 +107,7 @@ namespace BUsengSIS
             this.ResumeLayout(false);
         }
 
-        private BUsengSIS.BorderPanel pnlGrid;
+        private StudentInformationSystem.BorderPanel pnlGrid;
         private System.Windows.Forms.DataGridView dgvLog;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUser;

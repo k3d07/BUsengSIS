@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace BUsengSIS
+namespace StudentInformationSystem
 {
     internal static class Program
     {

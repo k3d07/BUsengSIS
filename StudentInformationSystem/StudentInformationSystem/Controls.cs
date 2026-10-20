@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace BUsengSIS
+namespace StudentInformationSystem
 {
     /// <summary>Panel with a 1px colored border.</summary>
     public class BorderPanel : Panel

@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Windows.Forms;
 
-namespace BUsengSIS
+namespace StudentInformationSystem
 {
     public partial class MainForm : Form
     {
