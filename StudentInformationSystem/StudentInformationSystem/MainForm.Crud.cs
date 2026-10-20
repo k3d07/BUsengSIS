@@ -57,5 +57,54 @@ namespace StudentInformationSystem
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_selectedStudentId))
+                {
+                    MessageBox.Show("Please select a student from the list first.",
+                        "No student selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Student s = ReadInputs();
+                s.StudentId = _selectedStudentId;   // the ID never changes on update
+
+                if (!Validator.IsValidStudent(s, out string error))
+                {
+                    MessageBox.Show(error, "Please check your input",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (_repo.UpdateStudent(s))
+                {
+                    // TODO (Keith): ActivityLogRepository.Log(<current user>, "EDIT", s.StudentId);
+                    ClearInputs();
+                    RefreshGrid();
+                    MessageBox.Show("Student updated.", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "No changes were saved. The student may have been removed.",
+                        "Update failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    RefreshGrid();
+                }
+            }
+            catch (MySqlException)
+            {
+                MessageBox.Show(
+                    "Could not reach the database. Please check that MySQL is running and try again.",
+                    "Database error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Something went wrong. Please try again.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
