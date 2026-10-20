@@ -1,4 +1,4 @@
-﻿namespace BUsengSIS.Security
+﻿namespace StudentInformationSystem.Security
 {
     public static class Session
     {
