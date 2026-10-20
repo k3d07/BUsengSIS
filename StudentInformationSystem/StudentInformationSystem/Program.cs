@@ -18,7 +18,7 @@ namespace StudentInformationSystem
                 {
                     if (login.ShowDialog() != DialogResult.OK) break;
                                                                                         //Uncomment lines below depending on preview
-                    //using (var main = new MainForm(login.Username, login.IsAdmin))    //Admin preview | with Log Panel
+                    using (var main = new MainForm(login.Username, login.IsAdmin))    //Admin preview | with Log Panel
                     //using (var main = new MainForm("student", false))                 //Normal User preview | Without Log panel
                     {
                         main.ShowDialog();
