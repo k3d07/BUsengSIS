@@ -376,7 +376,7 @@ namespace StudentInformationSystem
             //
             this.cboGender.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboGender.FormattingEnabled = true;
-            this.cboGender.Items.AddRange(new object[] { "Male", "Female" });
+            this.cboGender.Items.AddRange(new object[] { "Male", "Female", "Other" });
             this.cboGender.Location = new System.Drawing.Point(16, 184);
             this.cboGender.Name = "cboGender";
             this.cboGender.Size = new System.Drawing.Size(138, 25);
