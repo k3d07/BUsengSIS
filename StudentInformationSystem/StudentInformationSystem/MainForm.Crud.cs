@@ -106,5 +106,56 @@ namespace StudentInformationSystem
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_selectedStudentId))
+                {
+                    MessageBox.Show("Please select a student from the list first.",
+                        "No student selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                DialogResult answer = MessageBox.Show(
+                    $"Are you sure you want to delete student {_selectedStudentId}?",
+                    "Confirm delete",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2);   // default is No
+
+                if (answer != DialogResult.Yes)
+                    return;
+
+                string id = _selectedStudentId;
+
+                if (_repo.DeleteStudent(id))
+                {
+                    // TODO (Keith): ActivityLogRepository.Log(<current user>, "DELETE", id);
+                    ClearInputs();
+                    RefreshGrid();
+                    MessageBox.Show("Student deleted.", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "The student could not be deleted. They may already have been removed.",
+                        "Delete failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    RefreshGrid();
+                }
+            }
+            catch (MySqlException)
+            {
+                MessageBox.Show(
+                    "Could not reach the database. Please check that MySQL is running and try again.",
+                    "Database error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Something went wrong. Please try again.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
