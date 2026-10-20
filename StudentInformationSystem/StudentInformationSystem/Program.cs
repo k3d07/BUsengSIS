@@ -1,17 +1,31 @@
-namespace StudentInformationSystem
+using System;
+using System.Windows.Forms;
+
+namespace BUsengSIS
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            // Login -> Main window -> (Logout returns to Login, closing the window exits)
+            while (true)
+            {
+                using (var login = new LoginForm())
+                {
+                    if (login.ShowDialog() != DialogResult.OK) break;
+                                                                                        //Uncomment lines below depending on preview
+                    //using (var main = new MainForm(login.Username, login.IsAdmin))    //Admin preview | with Log Panel
+                    //using (var main = new MainForm("student", false))                 //Normal User preview | Without Log panel
+                    {
+                        main.ShowDialog();
+                        if (!main.LoggedOut) break;
+                    }
+                }
+            }
         }
     }
 }
