@@ -64,14 +64,7 @@ namespace StudentInformationSystem
         // Light UI helpers (no database logic)
         private void btnClear_Click(object sender, EventArgs e)
         {
-            txtStudentId.Clear();
-            txtName.Clear();
-            txtContact.Clear();
-            txtEmail.Clear();
-            cboGender.SelectedIndex = -1;
-            cboYear.SelectedIndex = -1;
-            cboProgram.SelectedIndex = -1;
-            txtName.Focus();
+            ClearInputs();
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -79,6 +72,7 @@ namespace StudentInformationSystem
             txtSearch.Clear();
             cboYearFilter.SelectedIndex = 0;
             cboProgramFilter.SelectedIndex = 0;
+            InitLogic();
         }
     }
 }
