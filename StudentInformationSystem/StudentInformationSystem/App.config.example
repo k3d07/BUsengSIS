@@ -2,6 +2,6 @@
 <configuration>
   <connectionStrings>
     <add name="StudentDb"
-         connectionString="Server=localhost;Port=3306;Database=student_db;User ID=root;Password=YOUR_REAL_PASSWORD;CharSet=utf8mb4;" />
+         connectionString="Server=localhost;Port=3306;Database=student_db;Uid=YOUR_USER;Pwd=YOUR_PASSWORD;" />
   </connectionStrings>
 </configuration>
