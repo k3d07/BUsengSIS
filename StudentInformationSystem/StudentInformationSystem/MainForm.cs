@@ -33,7 +33,7 @@ namespace StudentInformationSystem
 
             cboYearFilter.SelectedIndex = 0;
             cboProgramFilter.SelectedIndex = 0;
-
+            InitLogic();
             UpdateClock();
             clockTimer.Start();
         }
@@ -72,7 +72,7 @@ namespace StudentInformationSystem
             txtSearch.Clear();
             cboYearFilter.SelectedIndex = 0;
             cboProgramFilter.SelectedIndex = 0;
-            InitLogic();
+            SafeRefresh();
         }
     }
 }

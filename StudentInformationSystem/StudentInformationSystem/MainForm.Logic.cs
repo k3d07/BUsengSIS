@@ -26,6 +26,8 @@ namespace StudentInformationSystem
             dgvStudents.AllowUserToAddRows = false;
             dgvStudents.MultiSelect = false;
             dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            txtStudentId.ReadOnly = false;
+            txtStudentId.TabStop = true;
 
             // Buttons (handlers are in MainForm.Crud.cs)
             btnAdd.Click += btnAdd_Click;
