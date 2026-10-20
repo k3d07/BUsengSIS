@@ -12,5 +12,7 @@ namespace StudentInformationSystem.Models
         public string YearLevel { get; set; } = string.Empty;
         public string Program { get; set; } = string.Empty;
         public string ContactNumber { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public string? PhotoPath { get; set; }
     }
 }
