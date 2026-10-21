@@ -26,9 +26,11 @@ namespace StudentInformationSystem
                     return;
                 }
 
+                s.PhotoPath = SaveSelectedPhoto(s.StudentId);
+
                 if (_repo.AddStudent(s))
                 {
-                    // TODO (Keith): ActivityLogRepository.Log(<current user>, "ADD", s.StudentId);
+                    TryLog("ADD", s.StudentId);
                     ClearInputs();
                     RefreshGrid();
                     MessageBox.Show("Student added.", "Success",
@@ -51,12 +53,18 @@ namespace StudentInformationSystem
                     "Could not reach the database. Please check that MySQL is running and try again.",
                     "Database error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            catch (IOException)
+            {
+                MessageBox.Show("The photo could not be saved. Please try another image.",
+                    "Photo error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (Exception)
             {
                 MessageBox.Show("Something went wrong. Please try again.",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             try
@@ -78,9 +86,11 @@ namespace StudentInformationSystem
                     return;
                 }
 
+                s.PhotoPath = SaveSelectedPhoto(s.StudentId);
+
                 if (_repo.UpdateStudent(s))
                 {
-                    // TODO (Keith): ActivityLogRepository.Log(<current user>, "EDIT", s.StudentId);
+                    TryLog("EDIT", s.StudentId);
                     ClearInputs();
                     RefreshGrid();
                     MessageBox.Show("Student updated.", "Success",
@@ -100,12 +110,18 @@ namespace StudentInformationSystem
                     "Could not reach the database. Please check that MySQL is running and try again.",
                     "Database error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            catch (IOException)
+            {
+                MessageBox.Show("The photo could not be saved. Please try another image.",
+                    "Photo error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (Exception)
             {
                 MessageBox.Show("Something went wrong. Please try again.",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void btnDelete_Click(object sender, EventArgs e)
         {
             try
@@ -131,7 +147,7 @@ namespace StudentInformationSystem
 
                 if (_repo.DeleteStudent(id))
                 {
-                    // TODO (Keith): ActivityLogRepository.Log(<current user>, "DELETE", id);
+                    TryLog("DELETE", id);
                     ClearInputs();
                     RefreshGrid();
                     MessageBox.Show("Student deleted.", "Success",

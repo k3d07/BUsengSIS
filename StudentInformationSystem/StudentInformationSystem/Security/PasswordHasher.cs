@@ -1,37 +1,47 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace StudentInformationSystem.Security
 {
     public static class PasswordHasher
     {
-        public static string GenerateSalt()
+        private const int SaltSize = 16;
+        private const int HashSize = 32;
+        private const int Iterations = 100_000;
+        private const string Prefix = "PBKDF2";
+
+        // Returns ONE string for the password_hash column:
+        // PBKDF2$<iterations>$<salt in base64>$<hash in base64>
+        public static string Hash(string password)
         {
-            byte[] salt = new byte[32];
+            byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
+                password, salt, Iterations, HashAlgorithmName.SHA256, HashSize);
 
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
-
-            return Convert.ToBase64String(salt);
+            return $"{Prefix}${Iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(hash)}";
         }
 
-        public static string HashPassword(string password, string salt)
+        // Checks a typed password against a stored value. Never throws.
+        public static bool Verify(string password, string stored)
         {
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-            byte[] saltBytes = Convert.FromBase64String(salt);
-
-            byte[] combined = new byte[saltBytes.Length + passwordBytes.Length];
-
-            saltBytes.CopyTo(combined, 0);
-            passwordBytes.CopyTo(combined, saltBytes.Length);
-
-            using (var sha256 = SHA256.Create())
+            try
             {
-                byte[] hash = sha256.ComputeHash(combined);
-                return Convert.ToBase64String(hash);
+                string[] parts = (stored ?? "").Split('$');
+                if (parts.Length != 4 || parts[0] != Prefix) return false;
+
+                int iterations = int.Parse(parts[1]);
+                byte[] salt = Convert.FromBase64String(parts[2]);
+                byte[] expected = Convert.FromBase64String(parts[3]);
+
+                byte[] actual = Rfc2898DeriveBytes.Pbkdf2(
+                    password, salt, iterations, HashAlgorithmName.SHA256, expected.Length);
+
+                return CryptographicOperations.FixedTimeEquals(actual, expected);
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

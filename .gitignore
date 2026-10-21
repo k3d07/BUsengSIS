@@ -366,3 +366,6 @@ FodyWeavers.xsd
 
 # Local config with real passwords
 App.config
+
+photos/*
+!photos/.gitkeep

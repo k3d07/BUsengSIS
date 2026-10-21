@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Forms;
+using StudentInformationSystem.Security;
 
 namespace StudentInformationSystem
 {
@@ -33,7 +34,7 @@ namespace StudentInformationSystem
 
             cboYearFilter.SelectedIndex = 0;
             cboProgramFilter.SelectedIndex = 0;
-
+            InitLogic();
             UpdateClock();
             clockTimer.Start();
         }
@@ -57,6 +58,7 @@ namespace StudentInformationSystem
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            Session.Clear();
             LoggedOut = true;
             Close();
         }
@@ -72,7 +74,7 @@ namespace StudentInformationSystem
             txtSearch.Clear();
             cboYearFilter.SelectedIndex = 0;
             cboProgramFilter.SelectedIndex = 0;
-            InitLogic();
+            SafeRefresh();
         }
     }
 }
