@@ -3,6 +3,7 @@ using StudentInformationSystem.Data;
 using StudentInformationSystem.Helpers;
 using StudentInformationSystem.Models;
 using StudentInformationSystem.Security;
+using System.Drawing.Drawing2D;
 
 namespace StudentInformationSystem
 {
@@ -14,6 +15,10 @@ namespace StudentInformationSystem
         // Photo state
         private string _currentPhotoFile = "";     // file name already saved for the selected student
         private string _pendingPhotoSource = "";   // full path of a newly browsed image (not saved yet)
+        
+        // Grid thumbnails
+        private readonly Dictionary<string, Image> _thumbCache = new();
+        private Image? _avatarThumb;   // default avatar thumbnail for students without a photo
 
         // Called once from the MainForm constructor.
         private void InitLogic()
@@ -32,6 +37,21 @@ namespace StudentInformationSystem
             dgvStudents.AllowUserToAddRows = false;
             dgvStudents.MultiSelect = false;
             dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            // Photo thumbnail column (added in code, so the Designer files stay untouched)
+            var colPhoto = new DataGridViewImageColumn
+            {
+                Name = "colPhoto",
+                HeaderText = "Photo",
+                Width = 56,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                ImageLayout = DataGridViewImageCellLayout.Zoom,
+                SortMode = DataGridViewColumnSortMode.NotSortable,
+                Resizable = DataGridViewTriState.False
+            };
+            dgvStudents.Columns.Insert(0, colPhoto);
+            dgvStudents.RowTemplate.Height = 46;
+            dgvStudents.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvStudents.CellFormatting += dgvStudents_CellFormatting;
 
             // The designer marks the ID box read-only; it must be editable when adding a student.
             txtStudentId.ReadOnly = false;
@@ -51,12 +71,14 @@ namespace StudentInformationSystem
             cboProgramFilter.SelectedIndexChanged += (s, e) => SafeRefresh();
 
             Load += (s, e) => SafeRefresh();
+            ShowPhoto(null);
         }
 
         // Reloads the grid, respecting the search box and both filters,
         // and updates the counter and dashboard cards.
         private void RefreshGrid()
         {
+            _thumbCache.Clear();   // so a replaced photo shows up after Add/Update
             string year = cboYearFilter.SelectedIndex > 0 ? cboYearFilter.Text : "";
             string program = cboProgramFilter.SelectedIndex > 0 ? cboProgramFilter.Text : "";
 
@@ -85,6 +107,58 @@ namespace StudentInformationSystem
             {
                 lblCount.Text = "Could not load students. Please check that MySQL is running.";
             }
+        }
+
+        // Fills the photo cell for each row. Never throws.
+        private void dgvStudents_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || dgvStudents.Columns[e.ColumnIndex].Name != "colPhoto") return;
+
+            _avatarThumb ??= MakeAvatarThumb();
+            e.Value = _avatarThumb;
+            e.FormattingApplied = true;
+
+            try
+            {
+                if (dgvStudents.Rows[e.RowIndex].DataBoundItem is not DataRowView row) return;
+
+                string file = row["photo_path"] as string ?? "";
+                if (string.IsNullOrWhiteSpace(file)) return;
+
+                if (!_thumbCache.TryGetValue(file, out Image? thumb))
+                {
+                    using Image? full = PhotoStore.Load(file);
+                    if (full == null) return;
+
+                    thumb = MakeThumbnail(full, 40);
+                    _thumbCache[file] = thumb;
+                }
+
+                e.Value = thumb;
+            }
+            catch (Exception)
+            {
+                // Show the blank image instead of crashing.
+            }
+        }
+
+        // Makes a small square thumbnail (center-cropped) so the grid stays fast.
+        private static Image MakeThumbnail(Image source, int size)
+        {
+            int side = Math.Min(source.Width, source.Height);
+            var sourceRect = new Rectangle((source.Width - side) / 2, (source.Height - side) / 2, side, side);
+
+            var thumb = new Bitmap(size, size);
+            using var g = Graphics.FromImage(thumb);
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.DrawImage(source, new Rectangle(0, 0, size, size), sourceRect, GraphicsUnit.Pixel);
+            return thumb;
+        }
+
+        private static Image MakeAvatarThumb()
+        {
+            using Image avatar = DefaultAvatar.Get();
+            return MakeThumbnail(avatar, 40);
         }
 
         private Student ReadInputs()
@@ -191,8 +265,8 @@ namespace StudentInformationSystem
         private void ShowPhoto(Image? image)
         {
             picPhoto.Image?.Dispose();
-            picPhoto.Image = image;
-            lblNoPhoto.Visible = image == null;
+            picPhoto.Image = image ?? DefaultAvatar.Get();
+            lblNoPhoto.Visible = false;   // the avatar replaces the "No photo" text
         }
 
         private void ClearPhoto()
