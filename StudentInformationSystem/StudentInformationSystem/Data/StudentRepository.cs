@@ -7,7 +7,7 @@ using MySqlConnector;
 
 namespace StudentInformationSystem.Data
 {
-    internal class StudentRepository
+    internal class UserRepository
     {
         private const string SelectColumns =
             @"SELECT student_id, name, gender, year_level, program,
