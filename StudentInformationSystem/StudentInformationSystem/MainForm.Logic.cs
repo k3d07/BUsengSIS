@@ -42,6 +42,7 @@ namespace StudentInformationSystem
             btnUpdate.Click += btnUpdate_Click;
             btnDelete.Click += btnDelete_Click;
             btnBrowse.Click += btnBrowse_Click;
+            btnExport.Click += btnExport_Click;
 
             // Grid, search and filters
             dgvStudents.CellClick += dgvStudents_CellClick;
