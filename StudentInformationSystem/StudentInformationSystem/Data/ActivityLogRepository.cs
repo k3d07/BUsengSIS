@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using MySqlConnector;
 
 namespace StudentInformationSystem.Data
@@ -8,58 +9,37 @@ namespace StudentInformationSystem.Data
     {
         public static void Log(string username, string action, string studentId)
         {
-            using (var connection = DbHelper.GetConnection())
-            {
-                connection.Open();
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
 
-                string sql = @"INSERT INTO activity_log
-                               (username, action, student_id)
-                               VALUES (@username, @action, @studentId)";
+            using var cmd = new MySqlCommand(
+                @"INSERT INTO activity_log (username, action, student_id)
+                  VALUES (@username, @action, @studentId)", conn);
 
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@username", username);
-                    command.Parameters.AddWithValue("@action", action);
-                    command.Parameters.AddWithValue("@studentId",
-                        string.IsNullOrWhiteSpace(studentId)
-                            ? (object)DBNull.Value
-                            : studentId);
+            cmd.Parameters.AddWithValue("@username", username);
+            cmd.Parameters.AddWithValue("@action", action);
+            cmd.Parameters.AddWithValue("@studentId",
+                string.IsNullOrWhiteSpace(studentId) ? DBNull.Value : studentId);
 
-                    command.ExecuteNonQuery();
-                }
-            }
+            cmd.ExecuteNonQuery();
         }
 
-        public static List<string> GetRecent()
+        // Newest first. Columns: logged_at, username, action, student_id
+        public static DataTable GetRecent()
         {
-            var logs = new List<string>();
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
 
-            using (var connection = DbHelper.GetConnection())
-            {
-                connection.Open();
+            using var cmd = new MySqlCommand(
+                @"SELECT logged_at, username, action, student_id
+                  FROM activity_log
+                  ORDER BY logged_at DESC, log_id DESC
+                  LIMIT 200", conn);
+            using var adapter = new MySqlDataAdapter(cmd);
 
-                string sql = @"SELECT username, action, student_id, logged_at
-                               FROM activity_log
-                               ORDER BY logged_at DESC
-                               LIMIT 50";
-
-                using (var command = new MySqlCommand(sql, connection))
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string studentPart = reader.IsDBNull(reader.GetOrdinal("student_id"))
-                            ? ""
-                            : $" | Student ID: {reader.GetString("student_id")}";
-
-                        logs.Add($"{reader.GetDateTime("logged_at")} | " +
-                                 $"{reader.GetString("username")} | " +
-                                 $"{reader.GetString("action")}{studentPart}");
-                    }
-                }
-            }
-
-            return logs;
+            var table = new DataTable();
+            adapter.Fill(table);
+            return table;
         }
     }
 }
