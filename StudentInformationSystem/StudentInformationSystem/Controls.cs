@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -16,6 +17,7 @@ namespace StudentInformationSystem
             ResizeRedraw = true;
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Color BorderColor
         {
             get { return _borderColor; }
@@ -45,8 +47,13 @@ namespace StudentInformationSystem
             ForeColor = Color.White;
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int BorderWidth { get { return _borderWidth; } set { _borderWidth = Math.Max(1, value); Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Letter { get { return _letter; } set { _letter = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Color BorderColor { get { return _borderColor; } set { _borderColor = value; Invalidate(); } }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -77,8 +84,13 @@ namespace StudentInformationSystem
             BackColor = Color.White;
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Caption { get { return _caption; } set { _caption = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Value { get { return _value; } set { _value = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool ShowLeftBorder { get { return _showLeftBorder; } set { _showLeftBorder = value; Invalidate(); } }
 
         protected override void OnPaint(PaintEventArgs e)
