@@ -21,4 +21,10 @@
     <PackageReference Include="ScottPlot.WinForms" Version="5.1.59" />
   </ItemGroup>
 
+  <ItemGroup>
+	<None Update="Assets\**\*">
+	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
 </Project>

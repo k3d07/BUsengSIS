@@ -26,7 +26,9 @@ namespace StudentInformationSystem
                     return;
                 }
 
-                s.PhotoPath = SaveSelectedPhoto(s.StudentId);
+                if (!TrySaveSelectedPhoto(s.StudentId, out string? photoPath))
+                    return;
+                s.PhotoPath = photoPath;
 
                 if (_repo.AddStudent(s))
                 {
@@ -58,10 +60,9 @@ namespace StudentInformationSystem
                 MessageBox.Show("The photo could not be saved. Please try another image.",
                     "Photo error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Something went wrong. Please try again.",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorHandler.ShowUnexpected(ex, "Something went wrong. Please try again.");
             }
         }
 
@@ -86,7 +87,9 @@ namespace StudentInformationSystem
                     return;
                 }
 
-                s.PhotoPath = SaveSelectedPhoto(s.StudentId);
+                if (!TrySaveSelectedPhoto(s.StudentId, out string? photoPath))
+                    return;
+                s.PhotoPath = photoPath;
 
                 if (_repo.UpdateStudent(s))
                 {
@@ -115,10 +118,9 @@ namespace StudentInformationSystem
                 MessageBox.Show("The photo could not be saved. Please try another image.",
                     "Photo error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Something went wrong. Please try again.",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorHandler.ShowUnexpected(ex, "Something went wrong. Please try again.");
             }
         }
 
@@ -167,10 +169,9 @@ namespace StudentInformationSystem
                     "Could not reach the database. Please check that MySQL is running and try again.",
                     "Database error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Something went wrong. Please try again.",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorHandler.ShowUnexpected(ex, "Something went wrong. Please try again.");
             }
         }
     }

@@ -17,6 +17,15 @@ Repository: https://github.com/k3d07/BUsengSIS
 | Kim Edrich Custodio (Team Lead) | CRUD Logic, Repo Admin |
 | Julius Carullo | Error Handling & CherryTree Documentation |
 
+### Capstone roles
+
+| Member | Capstone role |
+|---|---|
+| Kim | Desktop ScottPlot Analytics & Dashboard |
+| Sebastian | .NET MAUI Mobile UI & Navigation |
+| Keith | Async MySQL Data Sync & Loopback Routing (10.0.2.2) |
+| Julius | Installer Packaging (.msi & .apk) & CherryTree Documentation |
+
 ---
 
 ## Features
@@ -36,6 +45,13 @@ Repository: https://github.com/k3d07/BUsengSIS
 - **Activity log** (LOGIN, ADD, EDIT, DELETE, EXPORT) with a View Log screen
 - **Status bar** showing the logged-in user and the date/time
 - Optional **email** field, validated only when filled
+
+## Capstone: Integrated Student Information & Mobile Analytics Ecosystem
+
+The capstone extends the desktop Student Information System with a ScottPlot analytics dashboard and a .NET MAUI Android app. Both clients connect to the same MySQL `student_db` database.
+
+- The desktop dashboard has a bar chart of students per year level and a pie chart of students per program. **Refresh Dashboard** reloads the charts, and **Export Charts (PNG)** saves them as PNG files.
+- The Android app displays students as `CollectionView` cards, supports search by name or Student ID, and filters by year level. It also supports adding and editing students, a student profile popup, and light/dark mode.
 
 ---
 
@@ -57,6 +73,14 @@ Repository: https://github.com/k3d07/BUsengSIS
 4. **Open the solution.** Open `StudentInformationSystem/StudentInformationSystem.slnx` in Visual Studio.
 5. **Build.** **Build → Rebuild Solution** (it should show 0 errors). If NuGet packages are missing, right-click the solution → **Restore NuGet Packages**.
 6. **Run.** Press **F5**.
+
+### How to run the mobile app
+
+1. Start MySQL. If `student_db` has not been created yet, run `database/schema.sql` first. Then run `database/capstone_setup.sql` in MySQL Workbench to create the mobile app's database account and permissions.
+2. Open `StudentInformationSystem/StudentInformationSystem.slnx` in Visual Studio.
+3. Start an Android emulator running Android 10 or later.
+4. In Solution Explorer, right-click `StudentMobileApp` and choose **Set as Startup Project**.
+5. Press **F5**. The Android app connects to the same MySQL database through `10.0.2.2:3306`.
 
 ### Default login
 
@@ -93,21 +117,28 @@ Dropdown values used by the app, the database, and validation:
 ```
 BUsengSIS/
 ├── README.md
-├── database/                  schema.sql (tables and sample data)
+├── database/
+│   ├── schema.sql             tables and sample data
+│   └── capstone_setup.sql     mobile database user and permissions
 ├── docs/                      CherryTree documentation
 ├── photos/                    student photos (saved as <student_id>.<ext>)
 └── StudentInformationSystem/
     ├── StudentInformationSystem.slnx
-    └── StudentInformationSystem/
+    ├── StudentInformationSystem/
+    │   ├── Models/            Student.cs
+    │   ├── Data/              DbHelper, StudentRepository, UserRepository, ActivityLogRepository
+    │   ├── Helpers/           Validator, PhotoStore
+    │   ├── Security/          PasswordHasher, Session
+    │   ├── MainForm*.cs       main window (layout, logic, CRUD handlers)
+    │   ├── LoginForm.cs       login screen
+    │   ├── LogForm.cs         activity log screen
+    │   ├── Program.cs         startup flow
+    │   └── App.config.example connection string template
+    └── StudentMobileApp/
         ├── Models/            Student.cs
-        ├── Data/              DbHelper, StudentRepository, UserRepository, ActivityLogRepository
-        ├── Helpers/           Validator, PhotoStore
-        ├── Security/          PasswordHasher, Session
-        ├── MainForm*.cs       main window (layout, logic, CRUD handlers)
-        ├── LoginForm.cs       login screen
-        ├── LogForm.cs         activity log screen
-        ├── Program.cs         startup flow
-        └── App.config.example connection string template
+        ├── Services/          DatabaseService.cs (async MySQL access)
+        ├── MainPage.xaml      student list, search, and year filters
+        └── AddEditPage.xaml   add/edit student form
 ```
 
 **Startup flow:** check the database → Login → Main window → Logout returns to Login.

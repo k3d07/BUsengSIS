@@ -90,6 +90,25 @@ public class DatabaseService
         }
     }
 
+    public async Task<string?> DeleteStudentAsync(string studentId)
+    {
+        try
+        {
+            await using var conn = new MySqlConnection(ConnStr);
+            await conn.OpenAsync();
+            const string sql = "DELETE FROM students WHERE student_id = @id";
+            await using var cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@id", studentId);
+
+            int affectedRows = await cmd.ExecuteNonQueryAsync();
+            return affectedRows > 0 ? null : "That student could not be found. Refresh the list and try again.";
+        }
+        catch (Exception ex)
+        {
+            return "Could not delete the student. Please try again. (" + ex.Message + ")";
+        }
+    }
+
     private static void Bind(MySqlCommand cmd, Student student)
     {
         cmd.Parameters.AddWithValue("@id", student.StudentId);
