@@ -11,7 +11,11 @@ namespace StudentMobileApp
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            return new Window(new NavigationPage(new MainPage())
+            {
+                BarBackgroundColor = Color.FromArgb("#1F6FEB"),
+                BarTextColor = Colors.White
+            });
         }
     }
 }
