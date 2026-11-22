@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.AddEditPage"
+             Title="Student"
+             BackgroundColor="{AppThemeBinding Light=#F6F8FA, Dark=#0D1117}">
+    <ScrollView>
+        <VerticalStackLayout Padding="20,18" Spacing="16">
+            <VerticalStackLayout Spacing="4">
+                <Label x:Name="PageHeading"
+                       Text="Add student"
+                       FontSize="25"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#1F2328, Dark=#E6EDF3}" />
+                <Label x:Name="PageDescription"
+                       Text="Enter the student details below."
+                       FontSize="13"
+                       TextColor="{AppThemeBinding Light=#656D76, Dark=#8B949E}" />
+            </VerticalStackLayout>
+
+            <Border Padding="18"
+                    Stroke="{AppThemeBinding Light=#E3E8EF, Dark=#30363D}"
+                    StrokeShape="RoundRectangle 18"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#161B22}">
+                <VerticalStackLayout Spacing="15">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Student ID" FontSize="13" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#656D76, Dark=#8B949E}" />
+                        <Border Padding="10,0" Stroke="{AppThemeBinding Light=#D0D7DE, Dark=#30363D}"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#0D1117}">
+                            <Entry x:Name="EntryId" Placeholder="Student ID" MaxLength="20"
+                                   TextColor="{AppThemeBinding Light=#1F2328, Dark=#E6EDF3}"
+                                   PlaceholderColor="{AppThemeBinding Light=#8C959F, Dark=#6E7681}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Full name" FontSize="13" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#656D76, Dark=#8B949E}" />
+                        <Border Padding="10,0" Stroke="{AppThemeBinding Light=#D0D7DE, Dark=#30363D}"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#0D1117}">
+                            <Entry x:Name="EntryName" Placeholder="Full name" MaxLength="100"
+                                   TextColor="{AppThemeBinding Light=#1F2328, Dark=#E6EDF3}"
+                                   PlaceholderColor="{AppThemeBinding Light=#8C959F, Dark=#6E7681}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Gender" FontSize="13" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#656D76, Dark=#8B949E}" />
+                        <Border Padding="10,0" Stroke="{AppThemeBinding Light=#D0D7DE, Dark=#30363D}"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#0D1117}">
+                            <Picker x:Name="PickGender" Title="Select gender"
+                                    TextColor="{AppThemeBinding Light=#1F2328, Dark=#E6EDF3}"
+                                    TitleColor="{AppThemeBinding Light=#8C959F, Dark=#6E7681}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Year level" FontSize="13" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#656D76, Dark=#8B949E}" />
+                        <Border Padding="10,0" Stroke="{AppThemeBinding Light=#D0D7DE, Dark=#30363D}"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#0D1117}">
+                            <Picker x:Name="PickYear" Title="Select year level"
+                                    TextColor="{AppThemeBinding Light=#1F2328, Dark=#E6EDF3}"
+                                    TitleColor="{AppThemeBinding Light=#8C959F, Dark=#6E7681}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Program" FontSize="13" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#656D76, Dark=#8B949E}" />
+                        <Border Padding="10,0" Stroke="{AppThemeBinding Light=#D0D7DE, Dark=#30363D}"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#0D1117}">
+                            <Picker x:Name="PickProgram" Title="Select program"
+                                    TextColor="{AppThemeBinding Light=#1F2328, Dark=#E6EDF3}"
+                                    TitleColor="{AppThemeBinding Light=#8C959F, Dark=#6E7681}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Contact number" FontSize="13" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#656D76, Dark=#8B949E}" />
+                        <Border Padding="10,0" Stroke="{AppThemeBinding Light=#D0D7DE, Dark=#30363D}"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#0D1117}">
+                            <Entry x:Name="EntryContact" Placeholder="09XXXXXXXXX or +639XXXXXXXXX"
+                                   Keyboard="Telephone" MaxLength="20"
+                                   TextColor="{AppThemeBinding Light=#1F2328, Dark=#E6EDF3}"
+                                   PlaceholderColor="{AppThemeBinding Light=#8C959F, Dark=#6E7681}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Button x:Name="SaveButton"
+                            Text="Save student"
+                            BackgroundColor="#1F6FEB"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            CornerRadius="12"
+                            HeightRequest="50"
+                            Clicked="OnSaveClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
