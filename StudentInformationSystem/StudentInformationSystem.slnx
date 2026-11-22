@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="StudentInformationSystem/StudentInformationSystem.csproj" />
-  <Project Path="StudentMobileApp/StudentMobileApp.csproj" Id="766c2ae6-99de-4c09-9374-b6e7a7c1327d" />
+  <Project Path="StudentMobileApp/StudentMobileApp.csproj" Id="766c2ae6-99de-4c09-9374-b6e7a7c1327d">
+    <Deploy Solution="Release|*" />
+  </Project>
 </Solution>

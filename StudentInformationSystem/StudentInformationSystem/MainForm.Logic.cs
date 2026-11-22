@@ -23,6 +23,7 @@ namespace StudentInformationSystem
         
         // Grid thumbnails
         private readonly Dictionary<string, Image> _thumbCache = new();
+        private readonly HashSet<string> _reportedPhotoLoadErrors = new(StringComparer.OrdinalIgnoreCase);
         private Image? _avatarThumb;   // default avatar thumbnail for students without a photo
 
         private void ApplyDetailsLayout()
@@ -416,12 +417,12 @@ namespace StudentInformationSystem
         {
             if (e.RowIndex < 0 || dgvStudents.Columns[e.ColumnIndex].Name != "colPhoto") return;
 
-            _avatarThumb ??= MakeAvatarThumb();
-            e.Value = _avatarThumb;
-            e.FormattingApplied = true;
-
             try
             {
+                _avatarThumb ??= MakeAvatarThumb();
+                e.Value = _avatarThumb;
+                e.FormattingApplied = true;
+
                 if (dgvStudents.Rows[e.RowIndex].DataBoundItem is not DataRowView row) return;
 
                 string file = row["photo_path"] as string ?? "";
@@ -438,9 +439,15 @@ namespace StudentInformationSystem
 
                 e.Value = thumb;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Show the blank image instead of crashing.
+                e.Value = _avatarThumb;
+                e.FormattingApplied = true;
+                string photoPath = dgvStudents.Rows[e.RowIndex].DataBoundItem is DataRowView row
+                    ? row["photo_path"] as string ?? ""
+                    : "unknown photo";
+                if (_reportedPhotoLoadErrors.Add(photoPath))
+                    ShowPhotoError($"Could not load a student photo: {ex.Message}");
             }
         }
 
@@ -517,19 +524,28 @@ namespace StudentInformationSystem
 
             _pendingPhotoSource = "";
             _currentPhotoFile = Str(row["photo_path"]);
-            ShowPhoto(PhotoStore.Load(_currentPhotoFile));
+            try
+            {
+                ShowPhoto(PhotoStore.Load(_currentPhotoFile));
+            }
+            catch (Exception ex)
+            {
+                ShowPhoto(null);
+                ShowPhotoError($"Could not load the selected student's photo: {ex.Message}");
+            }
         }
 
         // ----- Photo -----
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
+            Image? preview = null;
             try
             {
                 using var dialog = new OpenFileDialog
                 {
                     Title = "Choose a student photo",
-                    Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png"
+                    Filter = "Images (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp"
                 };
 
                 if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -540,40 +556,87 @@ namespace StudentInformationSystem
                     return;
                 }
 
-                Image? preview = PhotoStore.LoadFile(dialog.FileName);
-                if (preview == null)
+                preview = PhotoStore.LoadFile(dialog.FileName);
+                string studentId = txtStudentId.Text.Trim();
+                if (studentId.Length > 0)
                 {
-                    MessageBox.Show("That image could not be opened. Please try another one.",
-                        "Photo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    string copiedPath = PhotoStore.Save(dialog.FileName, studentId);
+                    _pendingPhotoSource = copiedPath;
+                    _currentPhotoFile = copiedPath;
+                }
+                else
+                {
+                    // The file name depends on the Student ID; defer the copy until save if the ID is not entered yet.
+                    _pendingPhotoSource = dialog.FileName;
                 }
 
-                _pendingPhotoSource = dialog.FileName;
                 ShowPhoto(preview);
+                preview = null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Could not open the photo. Please try another image.",
-                    "Photo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                preview?.Dispose();
+                ShowPhotoError($"Could not prepare the photo: {ex.Message}");
             }
         }
 
-        // Copies a newly browsed photo into the photos folder. Returns the file name to store,
-        // the existing name if no new photo was chosen, or null if the student has no photo.
-        private string? SaveSelectedPhoto(string studentId)
+        // Copies a newly browsed photo and returns its absolute path for photo_path.
+        private bool TrySaveSelectedPhoto(string studentId, out string? photoPath)
         {
-            if (!string.IsNullOrEmpty(_pendingPhotoSource))
-                return PhotoStore.Save(_pendingPhotoSource, studentId);
+            try
+            {
+                if (!string.IsNullOrEmpty(_pendingPhotoSource))
+                    photoPath = PhotoStore.Save(_pendingPhotoSource, studentId);
+                else if (!string.IsNullOrWhiteSpace(_currentPhotoFile) &&
+                         Path.IsPathRooted(_currentPhotoFile) && File.Exists(_currentPhotoFile))
+                {
+                    string currentFolder = Path.GetDirectoryName(Path.GetFullPath(_currentPhotoFile)) ?? string.Empty;
+                    string managedFolder = Path.GetFullPath(PhotoStore.GetPhotosFolder());
+                    photoPath = string.Equals(currentFolder, managedFolder, StringComparison.OrdinalIgnoreCase)
+                        ? _currentPhotoFile
+                        : PhotoStore.Save(_currentPhotoFile, studentId);
+                }
+                else
+                    photoPath = null;
 
-            return string.IsNullOrEmpty(_currentPhotoFile) ? null : _currentPhotoFile;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                photoPath = null;
+                ShowPhotoError($"Could not save the photo: {ex.Message}");
+                return false;
+            }
         }
 
         private void ShowPhoto(Image? image)
         {
-            picPhoto.Image?.Dispose();
-            picPhoto.Image = image ?? DefaultAvatar.Get();
-            lblNoPhoto.Visible = false;   // the avatar replaces the "No photo" text
+            try
+            {
+                Image next = image ?? DefaultAvatar.Get();
+                Image? previous = picPhoto.Image;
+                picPhoto.Image = next;
+                previous?.Dispose();
+                lblNoPhoto.Visible = false;   // the avatar replaces the "No photo" text
+            }
+            catch (Exception ex)
+            {
+                image?.Dispose();
+                ShowPhotoError($"Could not display the photo: {ex.Message}");
+                try
+                {
+                    picPhoto.Image = DefaultAvatar.Get();
+                    lblNoPhoto.Visible = false;
+                }
+                catch (Exception fallbackException)
+                {
+                    ShowPhotoError($"Could not display the default photo: {fallbackException.Message}");
+                }
+            }
         }
+
+        private void ShowPhotoError(string message) =>
+            MessageBox.Show(message, "Photo error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
         private void ClearPhoto()
         {

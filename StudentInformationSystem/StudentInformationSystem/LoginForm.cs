@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using MySqlConnector;
 using StudentInformationSystem.Data;
+using StudentInformationSystem.Helpers;
 using StudentInformationSystem.Security;
 
 namespace StudentInformationSystem
@@ -68,10 +69,9 @@ namespace StudentInformationSystem
                     "Could not reach the database. Please check that MySQL is running and try again.",
                     "Database error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Something went wrong. Please try again.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorHandler.ShowUnexpected(ex, "Something went wrong. Please try again.");
             }
         }
     }

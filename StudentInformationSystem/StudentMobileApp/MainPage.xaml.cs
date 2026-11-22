@@ -142,14 +142,37 @@ public partial class MainPage : ContentPage
         {
             string action = await DisplayActionSheet(
                 $"{student.Name}\nID: {student.StudentId}\n{student.Program} | {student.YearLevel}\nGender: {student.Gender}\nContact: {student.ContactNumber}",
-                "Close", null, "Edit");
+                "Close", "Delete", "Edit");
 
             if (action == "Edit")
+            {
                 await Navigation.PushAsync(new AddEditPage(student));
+                return;
+            }
+
+            if (action != "Delete")
+                return;
+
+            bool confirmDelete = await DisplayAlert(
+                "Delete student?",
+                $"Delete {student.Name} (ID: {student.StudentId})? This cannot be undone.",
+                "Delete", "Cancel");
+            if (!confirmDelete)
+                return;
+
+            string? error = await _db.DeleteStudentAsync(student.StudentId);
+            if (error is not null)
+            {
+                await DisplayAlert("Could not delete student", error, "OK");
+                return;
+            }
+
+            await DisplayAlert("Student deleted", $"{student.Name} was deleted.", "OK");
+            await LoadAsync();
         }
         catch (Exception)
         {
-            await DisplayAlert("Unable to open student", "Please try again.", "OK");
+            await DisplayAlert("Unable to complete action", "Please try again.", "OK");
         }
     }
 

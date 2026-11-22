@@ -12,8 +12,15 @@ namespace StudentInformationSystem.Helpers
         // Returns a NEW copy every time, so callers can dispose it safely.
         public static Bitmap Get()
         {
-            _source ??= Load();
-            return new Bitmap(_source);
+            try
+            {
+                _source ??= Load();
+                return new Bitmap(_source);
+            }
+            catch (Exception)
+            {
+                return CreateFallback();
+            }
         }
 
         private static Bitmap Load()
@@ -40,6 +47,11 @@ namespace StudentInformationSystem.Helpers
             }
 
             // Fallback so the app never crashes if the image is missing.
+            return CreateFallback();
+        }
+
+        private static Bitmap CreateFallback()
+        {
             var fallback = new Bitmap(64, 64);
             using var g = Graphics.FromImage(fallback);
             g.Clear(Color.FromArgb(238, 241, 245));
