@@ -137,19 +137,19 @@ public partial class MainPage : ContentPage
         if (e.CurrentSelection.FirstOrDefault() is not Student student)
             return;
 
+        StudentsView.SelectedItem = null;
         try
         {
-            await DisplayAlert(student.Name,
-                $"Student ID: {student.StudentId}\nProgram: {student.Program}\nYear Level: {student.YearLevel}",
-                "Close");
+            string action = await DisplayActionSheet(
+                $"{student.Name}\nID: {student.StudentId}\n{student.Program} | {student.YearLevel}\nGender: {student.Gender}\nContact: {student.ContactNumber}",
+                "Close", null, "Edit");
+
+            if (action == "Edit")
+                await Navigation.PushAsync(new AddEditPage(student));
         }
         catch (Exception)
         {
-            // Ignore transient navigation errors from the selection alert.
-        }
-        finally
-        {
-            StudentsView.SelectedItem = null;
+            await DisplayAlert("Unable to open student", "Please try again.", "OK");
         }
     }
 
@@ -157,7 +157,7 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            await Navigation.PushAsync(new AddStudentPage(_db));
+            await Navigation.PushAsync(new AddEditPage(null));
         }
         catch (Exception)
         {
