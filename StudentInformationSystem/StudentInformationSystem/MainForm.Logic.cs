@@ -11,6 +11,11 @@ namespace StudentInformationSystem
     {
         private readonly StudentRepository _repo = new StudentRepository();
         private string _selectedStudentId = "";
+        private readonly TextBox _firstName = new();
+        private readonly TextBox _middleName = new();
+        private readonly TextBox _lastName = new();
+        private string _selectedFullName = "";
+        private string _selectedNameFromParts = "";
 
         // Photo state
         private string _currentPhotoFile = "";     // file name already saved for the selected student
@@ -19,6 +24,303 @@ namespace StudentInformationSystem
         // Grid thumbnails
         private readonly Dictionary<string, Image> _thumbCache = new();
         private Image? _avatarThumb;   // default avatar thumbnail for students without a photo
+
+        private void ApplyDetailsLayout()
+        {
+            pnlDetails.SuspendLayout();
+            pnlDetails.Controls.Clear();
+            pnlDetails.Padding = new Padding(20);
+            pnlDetails.Width = 440;
+            pnlDetails.AutoScroll = true;
+
+            const int detailsWidthIncrease = 120;
+            pnlGrid.Left += detailsWidthIncrease;
+            pnlGrid.Width -= detailsWidthIncrease;
+            txtSearch.Left += detailsWidthIncrease;
+            txtSearch.Width -= detailsWidthIncrease;
+            lblCount.Left += detailsWidthIncrease;
+
+            ConfigureNameBox(_firstName, "First name", "First name");
+            ConfigureNameBox(_middleName, "Middle (optional)", "Middle name (optional)");
+            ConfigureNameBox(_lastName, "Last name", "Last name");
+
+            txtName.Dispose();
+            lblName.Dispose();
+            lblPhoto.Dispose();
+
+            lblDetailsTitle.Text = "Student Details";
+            lblStudentId.Text = "Student ID";
+            lblGender.Text = "Gender";
+            lblYear.Text = "Year Level";
+            lblProgram.Text = "Program";
+            lblContact.Text = "Contact Number";
+            lblEmail.Text = "Email (optional)";
+
+            foreach (Control input in new Control[]
+            {
+                txtStudentId, _firstName, _middleName, _lastName,
+                cboGender, cboYear, cboProgram, txtContact, txtEmail
+            })
+            {
+                input.Font = new Font("Segoe UI", 9.75f);
+            }
+
+            foreach (ComboBox combo in new[] { cboGender, cboYear, cboProgram })
+            {
+                combo.DropDownStyle = ComboBoxStyle.DropDownList;
+                combo.IntegralHeight = false;
+                combo.Font = txtStudentId.Font;
+                combo.Height = 32;
+                combo.MinimumSize = new Size(0, 32);
+            }
+
+            txtStudentId.AutoSize = false;
+            txtContact.AutoSize = false;
+            txtEmail.AutoSize = false;
+            _firstName.AutoSize = false;
+            _middleName.AutoSize = false;
+            _lastName.AutoSize = false;
+            foreach (TextBox textBox in new[] { txtStudentId, txtContact, txtEmail, _firstName, _middleName, _lastName })
+                textBox.Height = 32;
+
+            pnlPhoto.Size = new Size(96, 96);
+            pnlPhoto.Margin = new Padding(0, 0, 0, 6);
+            picPhoto.Dock = DockStyle.Fill;
+            btnBrowse.Size = new Size(96, 30);
+            btnBrowse.Dock = DockStyle.Top;
+            btnBrowse.Margin = Padding.Empty;
+
+            var root = new TableLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                ColumnCount = 1,
+                RowCount = 7,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
+            };
+            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            for (int row = 0; row < root.RowCount; row++)
+                root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+            root.Controls.Add(lblDetailsTitle, 0, 0);
+            lblDetailsTitle.AutoSize = true;
+            lblDetailsTitle.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblDetailsTitle.Margin = new Padding(0, 0, 0, 6);
+
+            var photo = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                AutoSize = true,
+                Margin = Padding.Empty
+            };
+            photo.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 112));
+            photo.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+            var photoLeft = new TableLayoutPanel
+            {
+                AutoSize = true,
+                ColumnCount = 1,
+                RowCount = 2,
+                Margin = Padding.Empty
+            };
+            photoLeft.Controls.Add(pnlPhoto, 0, 0);
+            photoLeft.Controls.Add(btnBrowse, 0, 1);
+
+            var photoRight = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 2,
+                AutoSize = true,
+                Margin = Padding.Empty
+            };
+            photoRight.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            photoRight.Controls.Add(Field(lblStudentId, txtStudentId), 0, 0);
+            photoRight.Controls.Add(Field(lblGender, cboGender), 0, 1);
+            photo.Controls.Add(photoLeft, 0, 0);
+            photo.Controls.Add(photoRight, 1, 0);
+            root.Controls.Add(photo, 0, 1);
+
+            var names = new TableLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                ColumnCount = 3,
+                RowCount = 2,
+                AutoSize = false,
+                Height = 68,
+                Margin = new Padding(0, 0, 0, 4)
+            };
+            names.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+            names.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+            names.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32));
+            names.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 36));
+            names.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32));
+
+            var firstCaption = NameCaption("First name");
+            var middleCaption = NameCaption("Middle name\n(optional)");
+            var lastCaption = NameCaption("Last name");
+            firstCaption.TextAlign = ContentAlignment.TopLeft;
+            middleCaption.TextAlign = ContentAlignment.TopLeft;
+            lastCaption.TextAlign = ContentAlignment.TopLeft;
+
+            _firstName.Dock = DockStyle.Fill;
+            _middleName.Dock = DockStyle.Fill;
+            _lastName.Dock = DockStyle.Fill;
+            _firstName.Margin = new Padding(0, 0, 8, 0);
+            _middleName.Margin = new Padding(0, 0, 8, 0);
+            _lastName.Margin = Padding.Empty;
+
+            names.Controls.Add(firstCaption, 0, 0);
+            names.Controls.Add(middleCaption, 1, 0);
+            names.Controls.Add(lastCaption, 2, 0);
+            names.Controls.Add(_firstName, 0, 1);
+            names.Controls.Add(_middleName, 1, 1);
+            names.Controls.Add(_lastName, 2, 1);
+            root.Controls.Add(names, 0, 2);
+
+            var yearProgram = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                AutoSize = true,
+                Margin = Padding.Empty
+            };
+            yearProgram.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 42));
+            yearProgram.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 58));
+            yearProgram.Controls.Add(Field(lblYear, cboYear, 8), 0, 0);
+            yearProgram.Controls.Add(Field(lblProgram, cboProgram), 1, 0);
+            root.Controls.Add(yearProgram, 0, 3);
+
+            root.Controls.Add(Field(lblContact, txtContact), 0, 4);
+            root.Controls.Add(Field(lblEmail, txtEmail), 0, 5);
+
+            var buttons = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 2,
+                AutoSize = true,
+                Margin = Padding.Empty
+            };
+            buttons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            buttons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            foreach (Button button in new[] { btnAdd, btnUpdate, btnDelete, btnClear })
+            {
+                button.Dock = DockStyle.Fill;
+                button.Height = 38;
+                button.Margin = new Padding(0, 0, 8, 4);
+            }
+            buttons.Controls.Add(btnAdd, 0, 0);
+            buttons.Controls.Add(btnUpdate, 1, 0);
+            buttons.Controls.Add(btnDelete, 0, 1);
+            buttons.Controls.Add(btnClear, 1, 1);
+            root.Controls.Add(buttons, 0, 6);
+
+            pnlDetails.Controls.Add(root);
+            pnlDetails.ResumeLayout(true);
+        }
+
+        private static void ConfigureNameBox(TextBox textBox, string placeholder, string accessibleName)
+        {
+            textBox.BorderStyle = BorderStyle.FixedSingle;
+            textBox.Font = new Font("Segoe UI", 9.75f);
+            textBox.AccessibleName = accessibleName;
+            textBox.TabStop = true;
+            NativeMethods.SetPlaceholder(textBox, placeholder);
+        }
+
+        private static Control Field(string caption, Control input, int rightGap = 0)
+        {
+            var wrapper = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 2,
+                AutoSize = true,
+                Margin = new Padding(0, 0, rightGap, 4)
+            };
+            wrapper.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            wrapper.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            wrapper.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            wrapper.Controls.Add(new Label
+            {
+                Text = caption,
+                AutoSize = true,
+                ForeColor = ColorTranslator.FromHtml("#656D76"),
+                Font = new Font("Segoe UI", 9F),
+                Margin = new Padding(0, 0, 0, 4)
+            }, 0, 0);
+            input.Dock = DockStyle.Top;
+            input.Margin = Padding.Empty;
+            wrapper.Controls.Add(input, 0, 1);
+            return wrapper;
+        }
+
+        private static Control Field(Label caption, Control input, int rightGap = 0)
+        {
+            caption.AutoSize = true;
+            caption.ForeColor = ColorTranslator.FromHtml("#656D76");
+            caption.Font = new Font("Segoe UI", 9F);
+            caption.Margin = new Padding(0, 0, 0, 4);
+
+            var wrapper = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 2,
+                AutoSize = true,
+                Margin = new Padding(0, 0, rightGap, 4)
+            };
+            wrapper.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            wrapper.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            wrapper.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            input.Dock = DockStyle.Top;
+            input.Margin = Padding.Empty;
+            wrapper.Controls.Add(caption, 0, 0);
+            wrapper.Controls.Add(input, 0, 1);
+            return wrapper;
+        }
+
+        private static Label NameCaption(string text) => new()
+        {
+            Text = text,
+            Dock = DockStyle.Fill,
+            AutoSize = false,
+            ForeColor = ColorTranslator.FromHtml("#656D76"),
+            Font = new Font("Segoe UI", 9F),
+            Margin = new Padding(0, 0, 8, 0)
+        };
+
+        private void LoadNameParts(string fullName)
+        {
+            _selectedFullName = fullName;
+            string[] parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            _firstName.Text = parts.Length > 0 ? parts[0] : "";
+            _middleName.Text = parts.Length > 2 ? string.Join(" ", parts.Skip(1).Take(parts.Length - 2)) : "";
+            _lastName.Text = parts.Length > 1 ? parts[^1] : "";
+            _selectedNameFromParts = ComposeNameParts();
+        }
+
+        private string GetNameForStorage()
+        {
+            string composed = ComposeNameParts();
+            if (_selectedFullName.Length > 0 &&
+                string.Equals(composed, _selectedNameFromParts, StringComparison.Ordinal))
+                return _selectedFullName;
+
+            return composed;
+        }
+
+        private string ComposeNameParts() => string.Join(" ", new[]
+        {
+            _firstName.Text.Trim(),
+            _middleName.Text.Trim(),
+            _lastName.Text.Trim()
+        }.Where(part => part.Length > 0));
 
         // Called once from the MainForm constructor.
         private void InitLogic()
@@ -166,7 +468,7 @@ namespace StudentInformationSystem
             return new Student
             {
                 StudentId = txtStudentId.Text,
-                Name = txtName.Text,
+                Name = GetNameForStorage(),
                 Gender = cboGender.SelectedItem?.ToString() ?? "",
                 YearLevel = cboYear.SelectedItem?.ToString() ?? "",
                 Program = cboProgram.SelectedItem?.ToString() ?? "",
@@ -179,7 +481,11 @@ namespace StudentInformationSystem
         private void ClearInputs()
         {
             txtStudentId.Clear();
-            txtName.Clear();
+            _firstName.Clear();
+            _middleName.Clear();
+            _lastName.Clear();
+            _selectedFullName = "";
+            _selectedNameFromParts = "";
             txtContact.Clear();
             txtEmail.Clear();
             cboGender.SelectedIndex = -1;
@@ -202,7 +508,7 @@ namespace StudentInformationSystem
             _selectedStudentId = Str(row["student_id"]);
             txtStudentId.Text = _selectedStudentId;
             txtStudentId.ReadOnly = true;          // the ID is locked while editing
-            txtName.Text = Str(row["name"]);
+            LoadNameParts(Str(row["name"]));
             cboGender.SelectedItem = Str(row["gender"]);
             cboYear.SelectedItem = Str(row["year_level"]);
             cboProgram.SelectedItem = Str(row["program"]);
