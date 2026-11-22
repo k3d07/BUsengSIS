@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 using MySqlConnector;
 using StudentInformationSystem.Data;
@@ -14,6 +15,11 @@ namespace StudentInformationSystem
         public LoginForm()
         {
             InitializeComponent();
+            Color primaryBlue = ColorTranslator.FromHtml("#1F6FEB");
+            pnlBrand.BackColor = primaryBlue;
+            btnLogin.BackColor = primaryBlue;
+            btnLogin.FlatAppearance.BorderColor = primaryBlue;
+            btnLogin.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#1A5FCC");
             AcceptButton = btnLogin;
             txtPassword.Clear();   // the designer pre-fills a demo password; don't show it
         }
