@@ -1,24 +1,19 @@
-﻿namespace StudentMobileApp
+using StudentMobileApp.Services;
+
+namespace StudentMobileApp
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object? sender, EventArgs e)
+        protected override async void OnAppearing()
         {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            base.OnAppearing();
+            var (items, error) = await new DatabaseService().GetStudentsAsync();
+            TestLabel.Text = error ?? $"Connected! {items.Count} students loaded.";
         }
     }
 }
