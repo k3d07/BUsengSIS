@@ -11,10 +11,12 @@ public partial class MainPage : ContentPage
     private List<Student> _all = new();
     private string _yearFilter = "All";
     private bool _isDarkTheme;
+    private bool _isAnimatingTheme;
 
     public MainPage()
     {
         InitializeComponent();
+        NavigationPage.SetHasNavigationBar(this, false);
         StudentsView.ItemsSource = _view;
         _isDarkTheme = Application.Current?.RequestedTheme == AppTheme.Dark;
         UpdateThemeIcon();
@@ -163,15 +165,37 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void OnToggleTheme(object? sender, EventArgs e)
+    private async void OnToggleTheme(object? sender, EventArgs e)
     {
-        _isDarkTheme = !_isDarkTheme;
-        if (Application.Current is not null)
-            Application.Current.UserAppTheme = _isDarkTheme ? AppTheme.Dark : AppTheme.Light;
+        if (_isAnimatingTheme)
+            return;
 
-        UpdateThemeIcon();
-        UpdateFilterStyles();
+        _isAnimatingTheme = true;
+        try
+        {
+            await Task.WhenAll(
+                ThemeButton.ScaleTo(0.78, 90, Easing.CubicIn),
+                ThemeButton.RotateTo(-35, 90, Easing.CubicIn));
+
+            _isDarkTheme = !_isDarkTheme;
+            if (Application.Current is not null)
+                Application.Current.UserAppTheme = _isDarkTheme ? AppTheme.Dark : AppTheme.Light;
+
+            UpdateThemeIcon();
+            UpdateFilterStyles();
+
+            await Task.WhenAll(
+                ThemeButton.RotateTo(0, 180, Easing.CubicOut),
+                ThemeButton.ScaleTo(1, 180, Easing.SpringOut));
+        }
+        finally
+        {
+            _isAnimatingTheme = false;
+            ThemeButton.Rotation = 0;
+            ThemeButton.Scale = 1;
+        }
     }
 
-    private void UpdateThemeIcon() => ThemeToolbarItem.Text = _isDarkTheme ? "☾" : "☀";
+    private void UpdateThemeIcon() =>
+        ThemeButton.Source = ImageSource.FromFile(_isDarkTheme ? "sun.svg" : "moon.svg");
 }
