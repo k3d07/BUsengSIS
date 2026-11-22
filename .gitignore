@@ -369,3 +369,5 @@ App.config
 
 photos/*
 !photos/.gitkeep
+
+AGENTS.md
