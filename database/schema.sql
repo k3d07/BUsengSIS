@@ -15,7 +15,9 @@ CREATE TABLE students (
     program VARCHAR(100) NOT NULL,
     contact_number VARCHAR(20) NOT NULL,
     email VARCHAR(100) NULL,
-    photo_path VARCHAR(255) NULL
+    photo_path VARCHAR(255) NULL,
+    INDEX idx_students_year_level (year_level),
+    INDEX idx_students_program (program)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS users (
